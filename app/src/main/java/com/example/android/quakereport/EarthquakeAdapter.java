@@ -26,6 +26,8 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     private static final String LOCATION_SEPARATOR = " of ";
 
+
+
     /**
      * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
      */
@@ -91,8 +93,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
      * This is our own custom constructor (it doesn't mirror a superclass constructor).
      * The context is used to inflate the layout file, and the list is the data we want
      * to populate into the lists.
-     *
-     * @param context        The current context. Used to inflate the layout file.
+     *  @param context        The current context. Used to inflate the layout file.
      * @param earthquake  A List of Word objects to display in a list
      */
     public EarthquakeAdapter(Activity context, ArrayList<Earthquake> earthquake){

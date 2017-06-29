@@ -17,6 +17,7 @@ package com.example.android.quakereport;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,13 +30,24 @@ public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
+    private static final String USGS_REQUEST_URL =
+            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
-       // Create a fake list of earthquake locations.
-        ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+        DownloadTask task = new DownloadTask();
+        task.execute(USGS_REQUEST_URL);
+
+    }
+
+    /**
+     * Update the UI with the given earthquake information.
+     */
+    private void updateUi(ArrayList<Earthquake> earthquakes) {
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -64,6 +76,35 @@ public class EarthquakeActivity extends AppCompatActivity {
             }
         });
 
-
     }
+
+    //Implement async
+    private class DownloadTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
+
+        @Override
+        protected ArrayList<Earthquake> doInBackground(String... urls) {
+            // Don't perform the request if there are no URLs, or the first URL is null.
+            if (urls.length < 1 || urls[0] == null) {
+                return null;
+            }
+            // Perform the HTTP request for earthquake data and process the response.
+            ArrayList<Earthquake> result = QueryUtils.fetchEarthquakeData();
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Earthquake> result) {
+            // If there is no result, do nothing.
+            if (result == null) {
+                return;
+            }
+            // Update the information displayed to the user.
+            // Create list of earthquake locations.
+            updateUi(result);
+
+        }
+    }
+
 }
+
